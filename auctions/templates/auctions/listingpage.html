@@ -1,0 +1,111 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+{%if activelistings.status == 'inactive'%}
+<h2>Listing is no longer active</h2>
+Winner:
+{%for user in activelistings.listingbid.all%}
+{{user.biddinguser}}
+{%endfor%}
+
+{%else%}
+        <div id="grid">
+        <div id="griditem">
+        <img src="{{activelistings.imageurl}}" width=400 height = 400>
+        </div>
+        <div id="griditem">
+        <h2>{{activelistings.title}}</h2>
+        <p><b>Description:</b> {{activelistings.description}}</p>
+        <p><b>Category:</b> {{activelistings.category}}</p>
+        <p><b>Starting Bid:</b> ₹ {{activelistings.startingBid}}</p>
+        
+        <p style="color: #85bb65;"><b>Current Bid: </b> ₹
+        {%for price in activelistings.listingbid.all%}
+                {{price.bidprice}}
+                {%empty%}
+                {{activelistings.startingBid}}
+                {%endfor%}
+        </p> 
+
+    
+    
+    {% if message %}
+            <div class="alert alert-warning">{{ message }}</div>
+    {% endif %}
+            <form action="{% url 'bid' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                <input autofocus class="form-control" type="number" name="bidprice" placeholder="Enter bid amount">
+                </div>
+                <input type="hidden" name="biddinguserid" value={{user.id}}>
+                <input type="hidden" name="listingid" value={{activelistings.id}}>
+                <input type="hidden" name="startingbid" value={{activelistings.startingBid}}>
+                <input class="btn btn-primary" type="submit" value="Bid Now!">
+            </form>
+    <i id="subtext">(Login Required)</i>
+        
+    <br>
+    <b>OR</b>
+    {%if user in activelistings.userswhosaved.all%}
+        <form action="{% url 'unsave'%}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="userid" value={{user.id}}>
+            <input type="hidden" name="listingid" value={{activelistings.id}}>
+            <input class="btn btn-primary" type="submit" value="Remove from Watchlist">
+        </form>
+    {%else%}
+        <form action="{% url 'watchlist' user.id%}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="userid" value={{user.id}}>
+            <input type="hidden" name="listingid" value={{activelistings.id}}>
+            <input class="btn btn-primary" type="submit" value="Add to Watchlist">
+        </form>
+    {%endif%}
+    <i id="subtext">(Login Required)</i>
+
+    </div>
+    </div>
+
+    <div id="grid">
+    <div id="griditem">
+    <h4> Other details: </h4> 
+    <b>Listed by:</b> {{activelistings.creator}}<br>
+    <b>Instructions:</b> The listing will be closed only after the creator of this listing closes the listing <br><br>
+
+    {%if user == activelistings.creator%}
+     <i> Since you are the creator of this listing you can click on the button below to close listing:</i>
+    <form action="{%url 'inactive'%}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Close listing">
+    <input type="hidden" name="listingid" value={{activelistings.id}}>
+    </form>
+    {%endif%}
+
+    </div>
+
+
+    <div id="griditem">
+    <h4>Comments:</h4>
+        {%for comment in activelistings.lisingcomments.all%}
+            <b>{{comment.author}}</b>: {{comment.comment}}
+            <br>
+        {%empty%}
+        <i style="color: grey">No comments in this listing</i><br>
+        {% endfor %}
+    
+    <br>
+    
+    <form action="{%url 'comment' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+        <input autofocus class="form-control" type="text" name="comment" placeholder="Add a new comment">
+        </div>
+        <input type="hidden" name="userid" value={{user.id}}>
+        <input type="hidden" name="listingid" value={{activelistings.id}}>
+        <input class="btn btn-primary" type="submit">
+    </form>
+    <i id="subtext">(Login Required)</i>
+    </div>
+{%endif%}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Create Listings</h2>
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input autofocus class="form-control" type="text" name="title" placeholder="Title of the Listing">
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" type="text" name="description" placeholder="Description">
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" type="url" name="imageurl" placeholder="Image URL">
+            <input type="hidden" name="altimageurl" value="https://akm-img-a-in.tosshub.com/sites/indiacontent/0/media/images/frontend/image-not-found.png">
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" type="number" name="startingbid" placeholder="Starting Bid">
+        </div>
+
+        <div class="form-group">
+            Category: 
+            <select name="categoryid">
+                {%for category in categories%}
+                <option value="{{category.id}}">{{category.category}}</option>
+                {% endfor%}
+            </select>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Add Listing">
+        <input type="hidden" name="userid" value={{user.id}}>
+    </form>
+    
+{% endblock %}

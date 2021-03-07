@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>All Listings</h2>
+    <div id="container">
+        {% for listing in activelistings %}
+            <div>
+            <img src="{{listing.imageurl}}" alt="{{ listing.title }}" width=250 height = 250> <br>
+            <b><a href="{% url 'listingpage' listing.id %}">{{ listing.title }}</a> </b><br>
+            <b>Description:</b> {{ listing.description }} <br>
+            <b style="color: #85bb65;">Current price: ₹ 
+            {%for price in listing.listingbid.all%}
+                {{price.bidprice}}
+                {%empty%}
+                {{listing.startingBid}}
+                {%endfor%}
+            <br>
+            </b>
+            <b>Category: </b>{{listing.category}}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

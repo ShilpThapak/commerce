@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings in Category: "{{category}}"</h2>
+    <div id="container">
+    {% for listing in categories.categorylistings.all%}
+    {%if listing.status == "active"%}
+    <div id="listdiv">
+        <img src="{{listing.imageurl}}" alt="{{ listing.title }}" width=250 height = 250> <br>
+        <b><a href="{% url 'listingpage' listing.id%}">{{ listing.title }}</a></b> <br>
+        <b>Description:</b> {{ listing.description }} <br>
+        <b style="color: #85bb65;">Current price: 
+            {%for price in listing.listingbid.all%}
+                {{price.bidprice}}
+            {%empty%}
+                {{listing.startingBid}}
+            {%endfor%}
+        </b>
+    </div>
+    {%endif%}
+    {%empty%}
+    <i style="color: grey;">No activelistings in this category</i>
+    {%endfor%}
+    </div>
+{% endblock %}
